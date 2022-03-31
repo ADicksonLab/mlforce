@@ -11,56 +11,55 @@ There are three ways to install dependencies of this package.
    build it from its source following instruction at [[https://github.com/pytorch/pytorch/blob/master/docs/libtorch.rst][here]].
 - Installing all packages from Conda-forge channel via conda.
 
-Here we provide instructions uisng the third method
-
-You should use conda to make a new virtual environment using the ~environment.yml~
-#+begin_src bash
-  conda env create -n myenv -f environment.yml
-  conda activate myenv
-#+end_src
-
-After dependencies installation, follow these instructions to install MLForce
+Here we provide instructions uisng the third method, follow these instructions to install MLForce
 
 1- clone MLforce from its repositiry
 #+begin_src bash
   git clone git@gitlab.com:ADicksonLab/mlforce.git
 #+end_src
-2- Create ~build~ directory to install MLForce in it
+
+2- You should use conda to make a new virtual environment using the ~environment.yml~
+#+begin_src bash
+  conda env create -n myenv -f environment.yml
+  conda activate myenv
+#+end_src
+
+3- Create ~build~ directory to install MLForce in it
 #+begin_src bash
   cd mlforce
   mkdir build && cd build
 #+end_src
 
-3- Run the ~cmake~ command by passing the installed Libtorch path to it
+4- Run the ~cmake~ command by passing the installed Libtorch path to it
 #+begin_src bash
   cmake -DCMAKE_PREFIX_PATH="$(python -c 'import torch.utils; print(torch.utils.cmake_prefix_path)')" ..
 #+end_src
 
-4- Run the ~ccmake~ command to set up the configuration for bulding MLForce
+5- Run the ~ccmake~ command to set up the configuration for bulding MLForce
 
 #+begin_src bash
   ccmake -i ..
 #+end_src
-5-Make sure that the path to ~OPENMM_DIR~ and ~CMAKE_INSTALL_PREFIX~ set to
+6-Make sure that the path to ~OPENMM_DIR~ and ~CMAKE_INSTALL_PREFIX~ set to
 the OpenMM path you installed
 
-6- If you want to build the CUDA platform set the ~NN_BUILD_CUDA_LIB~
+7- If you want to build the CUDA platform set the ~NN_BUILD_CUDA_LIB~
 to ~on~ and if you want to build the OpenCL platform set the
 ~NN_BUILD_OPENCL_LIB~ to ~on~ as well
 
-7- Press "c" to configure the plugin then press "g" to generate it
+8- Press "c" to configure the plugin then press "g" to generate it
 
-8- Install the MLForce plugin
+9- Install the MLForce plugin
 #+begin_src bash
   make install
 #+end_src
 
-9- Install the Python wrapper
+10- Install the Python wrapper
 #+begin_src bash
   make PythonInstall
 #+end_src
 
-10- Add Libtorch libraray path to the environmental variable ~LD_LIBRARY_PATH~
+11- Add Libtorch libraray path to the environmental variable ~LD_LIBRARY_PATH~
 #+begin_src bash
 export LIBTORCH_LIBRARY_PATH="path/to/libtorch/lib"
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$LIBTORCH_LIBRARY_PATH"
@@ -70,7 +69,7 @@ you can get the path to LibTorch by doing
 python -c 'import torch.utils; print(torch.utils.cmake_prefix_path)'
 #+end_src
 
-11- Test if the installation works
+12- Test if the installation works
 #+begin_src bash
  python -c "import mlforce"
 #+end_src
