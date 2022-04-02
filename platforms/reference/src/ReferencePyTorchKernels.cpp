@@ -197,7 +197,8 @@ double ReferenceCalcPyTorchForceKernel::execute(ContextImpl& context, bool inclu
 		{static_cast<int64_t>(numGhostParticles), 4}, torch::kFloat64);
 
 	// Run the pytorch model and get the energy
-	vector<torch::jit::IValue> nnInputs = {positionsTensor};
+	auto charges = signalsTensor.index({Slice(), 0});
+	vector<torch::jit::IValue> nnInputs = {positionsTensor, charges};
 
 	// Copy the box vector
 	if (usePeriodic) {

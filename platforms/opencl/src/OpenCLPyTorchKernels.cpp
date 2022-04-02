@@ -188,7 +188,8 @@ double OpenCLCalcPyTorchForceKernel::execute(ContextImpl& context, bool includeF
 	positionsTensor.requires_grad_(true);
 
 	// Run the pytorch model and get the energy
-	vector<torch::jit::IValue> nnInputs = {positionsTensor};
+	auto charges = signalsTensor.index({Slice(), 0});
+	vector<torch::jit::IValue> nnInputs = {positionsTensor, charges};
 
 	if (usePeriodic) {
 	  Vec3 box[3];

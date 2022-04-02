@@ -180,8 +180,8 @@ double CudaCalcPyTorchForceKernel::execute(ContextImpl& context, bool includeFor
 	signalsTensor = signalsTensor.to(options);
 	positionsTensor = positionsTensor.to(options);
 	positionsTensor.requires_grad_(true);
-
-	vector<torch::jit::IValue> nnInputs = {positionsTensor};
+	auto charges = signalsTensor.index({Slice(), 0});
+	vector<torch::jit::IValue> nnInputs = {positionsTensor, charges};
 	if (usePeriodic) {
 	  Vec3 box[3];
 	  cu.getPeriodicBoxVectors(box[0], box[1], box[2]);

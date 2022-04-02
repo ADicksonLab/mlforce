@@ -7,8 +7,8 @@ used for creating external forces.
 * Installation
 There are three ways to install dependencies of this package.
 - Installing [[ https://github.com/pytorch/pytorch#from-source][PyTorch]] from source and use the libtorch from it.
-- Installing [[https://pytorch.or][LibTorch]] from its binary CXX ABI files or build or
-   build it from its source following instruction at [[https://github.com/pytorch/pytorch/blob/master/docs/libtorch.rst][here]].
+- Installing [[https://pytorch.or][LibTorch]] from its binary CXX ABI files or build it from
+  its source following instruction at [[https://github.com/pytorch/pytorch/blob/master/docs/libtorch.rst][here]].
 - Installing all packages from Conda-forge channel via conda.
 
 Here we provide instructions uisng the third method, follow these instructions to install MLForce
