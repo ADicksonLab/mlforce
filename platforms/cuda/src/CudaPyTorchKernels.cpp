@@ -267,7 +267,8 @@ double CudaCalcPyTorchForceKernel::execute(ContextImpl& context, bool includeFor
 			static_cast<int64_t>(particleIndices[0]),
 			static_cast<int64_t>(particleIndices.size())).copy_(forceTensor);
 
-		paddedForceTensor = paddedForceTensor.to(torch::kCUDA);
+		const torch::Device device(torch::kCUDA, cu.getDeviceIndex());
+		paddedForceTensor = paddedForceTensor.to(device);
 		CHECK_RESULT(cuCtxSynchronize(), "Error synchronizing CUDA context");
 		cu.setAsCurrent();
 		void* fdata;
