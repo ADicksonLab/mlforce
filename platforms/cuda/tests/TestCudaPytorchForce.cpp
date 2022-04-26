@@ -39,6 +39,7 @@
 #include "openmm/Platform.h"
 #include "openmm/System.h"
 #include "openmm/VerletIntegrator.h"
+#include "openmm/CustomNonbondedForce.h"
 #include "sfmt/SFMT.h"
 #include <cmath>
 #include <iostream>
@@ -62,12 +63,33 @@ void testForce() {
 		system.addParticle(1.0);
 		positions[i] = Vec3(genrand_real2(sfmt), genrand_real2(sfmt), genrand_real2(sfmt))*10;
 	}
-	std::vector<vector<double>> features={{1.13}, {5.0}} ;
+	std::vector<vector<double>> features(2, std::vector<double>(180));
 	std::vector<int> pindices={0, 1};
 	std::vector<double> weights={0.1,0.2};
 	double scale = 10.0;
-	PyTorchForce* force = new PyTorchForce("tests/central.pb", features, pindices, weights, scale);
+	PyTorchForce* force = new PyTorchForce("tests/ani_model_cpu.pt", features, pindices, weights, scale);
 	system.addForce(force);
+
+	CustomNonbondedForce* cnb_force = new CustomNonbondedForce("epsilon*(sigma/r)^12;sigma=0.5*(sigma1+sigma2);epsilon=sqrt(epsilon1*epsilon2)");
+	cnb_force->addPerParticleParameter("sigma");
+	cnb_force->addPerParticleParameter("epsilon");
+
+	vector<double> param = {0.02, 2.0};
+	for (int i = 0; i < numParticles; i++) {
+	  cnb_force->addParticle(param);
+	}
+	cnb_force->addGlobalParameter("charge_g0", -1.2);
+	cnb_force->addGlobalParameter("charge_g1", 0.5);
+	cnb_force->addGlobalParameter("sigma_g0", 0.023);
+	cnb_force->addGlobalParameter("sigma_g1", 0.1);
+	cnb_force->addGlobalParameter("epsilon_g0", 0.03);
+	cnb_force->addGlobalParameter("epsilon_g1", 1.5);
+	cnb_force->addGlobalParameter("lambda_g0", 1);
+	cnb_force->addGlobalParameter("lambda_g1", 1);
+	cnb_force->addGlobalParameter("assignment_g0", 0);
+	cnb_force->addGlobalParameter("assignment_g1", 1);
+
+	system.addForce(cnb_force);
 
 	// Compute the forces and energy.
 
@@ -77,61 +99,8 @@ void testForce() {
 	context.setPositions(positions);
 	State state = context.getState(State::Energy | State::Forces);
 
-	// See if the energy is correct.  The network defines a potential of the form E(r) = |r|^2
-
-	double expectedEnergy = 0;
-	for (int i = 0; i < numParticles; i++) {
-		Vec3 pos = positions[i];
-		double r = sqrt(pos.dot(pos));
-		expectedEnergy += r*r;
-		ASSERT_EQUAL_VEC(pos*(-2.0), state.getForces()[i], 1e-5);
-	}
-	ASSERT_EQUAL_TOL(expectedEnergy, state.getPotentialEnergy(), 1e-5);
 }
 
-void testPeriodicForce() {
-	// Create a random cloud of particles.
-
-	const int numParticles = 10;
-	System system;
-	system.setDefaultPeriodicBoxVectors(Vec3(2, 0, 0), Vec3(0, 3, 0), Vec3(0, 0, 4));
-	vector<Vec3> positions(numParticles);
-	OpenMM_SFMT::SFMT sfmt;
-	init_gen_rand(0, sfmt);
-	for (int i = 0; i < numParticles; i++) {
-		system.addParticle(1.0);
-		positions[i] = Vec3(genrand_real2(sfmt), genrand_real2(sfmt), genrand_real2(sfmt))*10;
-	}
-	std::vector<vector<double>> features={{1.13}, {5.0}} ;
-	std::vector<int> pindices={0, 1};
-	std::vector<double> weights={0.1,0.2};
-	double scale = 10.0;
-	PyTorchForce* force = new PyTorchForce("tests/central.pb", features, pindices, weights, scale);
-	force->setUsesPeriodicBoundaryConditions(true);
-	system.addForce(force);
-
-	// Compute the forces and energy.
-
-	VerletIntegrator integ(1.0);
-	Platform& platform = Platform::getPlatformByName("CUDA");
-	Context context(system, integ, platform);
-	context.setPositions(positions);
-	State state = context.getState(State::Energy | State::Forces);
-
-	// See if the energy is correct.  The network defines a potential of the form E(r) = |r|^2
-
-	double expectedEnergy = 0;
-	for (int i = 0; i < numParticles; i++) {
-		Vec3 pos = positions[i];
-		pos[0] -= floor(pos[0]/2.0)*2.0;
-		pos[1] -= floor(pos[1]/3.0)*3.0;
-		pos[2] -= floor(pos[2]/4.0)*4.0;
-		double r = sqrt(pos.dot(pos));
-		expectedEnergy += r*r;
-		ASSERT_EQUAL_VEC(pos*(-2.0), state.getForces()[i], 1e-5);
-	}
-	ASSERT_EQUAL_TOL(expectedEnergy, state.getPotentialEnergy(), 1e-5);
-}
 
 int main(int argc, char* argv[]) {
 	try {
@@ -139,7 +108,6 @@ int main(int argc, char* argv[]) {
 		if (argc > 1)
 			Platform::getPlatformByName("CUDA").setPropertyDefaultValue("Precision", string(argv[1]));
 		testForce();
-		testPeriodicForce();
 	}
 	catch(const std::exception& e) {
 		std::cout << "exception: " << e.what() << std::endl;
