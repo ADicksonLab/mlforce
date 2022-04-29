@@ -41,10 +41,10 @@ using namespace OpenMM;
 using namespace std;
 
 /**
- * @brief
+ * Extracts the positions from the context
  *
  * @param context
- * @return vector<Vec3>&
+ * @return positions
  */
 static vector<Vec3>& extractPositions(ContextImpl& context) {
 	ReferencePlatform::PlatformData* data = reinterpret_cast<ReferencePlatform::PlatformData*>(context.getPlatformData());
@@ -52,20 +52,20 @@ static vector<Vec3>& extractPositions(ContextImpl& context) {
 }
 
 /**
- * @brief
+ * Extract the forces from the context
  *
  * @param context
- * @return vector<Vec3>&
+ * @return forces
  */
 static vector<Vec3>& extractForces(ContextImpl& context) {
 	ReferencePlatform::PlatformData* data = reinterpret_cast<ReferencePlatform::PlatformData*>(context.getPlatformData());
 	return *((vector<Vec3>*) data->forces);
 }
 /**
- * @brief
+ *Extract the box vectors from the context
  *
  * @param context
- * @return Vec3*
+ * @return box vectors
  */
 static Vec3* extractBoxVectors(ContextImpl& context) {
 	ReferencePlatform::PlatformData* data = reinterpret_cast<ReferencePlatform::PlatformData*>(context.getPlatformData());
@@ -73,7 +73,7 @@ static Vec3* extractBoxVectors(ContextImpl& context) {
 }
 
 /**
- * @brief
+ * Get the saved derivative of energy with respect to the global parameters
  *
  * @param context
  * @return map<string, double>&
@@ -85,11 +85,12 @@ static map<string, double>& extractEnergyParameterDerivatives(ContextImpl& conte
 
 
 /**
- * @brief
+ * Get the global variables
+ * The global variables contain the dynmaicla varibales (signals)
  *
  * @param context
- * @param numParticles
- * @return std::vector<double>
+ * @param  the number of ghost partciles
+ * @return dynmaicla varibales (signals)
  */
 
 std::vector<double> extractContextVariables(ContextImpl& context, int numParticles) {
@@ -102,13 +103,12 @@ std::vector<double> extractContextVariables(ContextImpl& context, int numParticl
 	}
 	return signals;
 }
-
 /**
- * @brief
+ * Creates a 2D vector from a 2D tensor data
  *
- * @param ptr
- * @param nRows
- * @param nCols
+ * @param a pointer to the tensor data
+ * @param number of the rows
+ * @param number of the columns
  * @return std::vector<std::vector<double>>
  */
 std::vector<std::vector<double>> tensorTo2DVec(double* ptr, int nRows, int nCols) {
@@ -123,14 +123,6 @@ std::vector<std::vector<double>> tensorTo2DVec(double* ptr, int nRows, int nCols
 ReferenceCalcPyTorchForceKernel::~ReferenceCalcPyTorchForceKernel() {
 }
 
-
-/**
- * @brief
- *
- * @param system
- * @param force
- * @param nnModule
- */
 void ReferenceCalcPyTorchForceKernel::initialize(const System& system, const PyTorchForce& force, torch::jit::script::Module nnModule) {
 	this->nnModule = nnModule;
 	nnModule.to(torch::kCPU);
@@ -162,14 +154,6 @@ void ReferenceCalcPyTorchForceKernel::initialize(const System& system, const PyT
 
 }
 
-/**
- * @brief
- *
- * @param context
- * @param includeForces
- * @param includeEnergy
- * @return double
- */
 double ReferenceCalcPyTorchForceKernel::execute(ContextImpl& context, bool includeForces, bool includeEnergy) {
 
 	// Get the  positions from the context (previous step)
@@ -221,7 +205,7 @@ double ReferenceCalcPyTorchForceKernel::execute(ContextImpl& context, bool inclu
 	//convert it to a 2d vector
 	std::vector<std::vector<double>> distMatrix = tensorTo2DVec(distMatTensor.data_ptr<double>(),
 		numGhostParticles,
-	    static_cast<int>(targetFeaturesTensor.size(0)));
+		static_cast<int>(targetFeaturesTensor.size(0)));
 
 	// call Hungarian algorithm to determine mapping (and loss)
 	vector<int> assignment;

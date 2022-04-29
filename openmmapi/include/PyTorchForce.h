@@ -47,35 +47,67 @@ namespace PyTorchPlugin {
 class OPENMM_EXPORT_PYTORCH PyTorchForce : public OpenMM::Force {
 public:
 	/**
-	 * Create a PyTorchForce.  The network is defined by  Pytorch and saved
-	 * to a .pt or .pth file
-	 *
-	 * @param file   the path to the file containing the network
-	 */
-  PyTorchForce(const std::string& file, std::vector<std::vector<double>> targetFeatures,
-			   std::vector<int> particleIndices, std::vector<double> signalForceWeights, double scale);
+	* Create a PyTorchForce. The Neural Network (TorchANI) model is defined by a PyTorch
+	* ScriptModule and saved in the '.pt' format.
+	*
+	* @param file The path to the '.pt' file that contains the PyTorch model.
+	* @param targetFeatures The faetures of a target ligand.
+	* @param particleIndices  The Ghost partcile indices.
+	* @param signalForceWeights The weight values for the dynamical variables (Signals).
+	* @param scale The scale value of the force.
+	*/
+	PyTorchForce(const std::string& file, std::vector<std::vector<double>> targetFeatures,
+				   std::vector<int> particleIndices, std::vector<double> signalForceWeights, double scale);
 	/**
-	 * Get the path to the file containing the graph.
-	 */
+	* Get the path to the '.pt' file containg the TorchANI model
+	*
+	* @return The path to the model
+	*/
 	const std::string& getFile() const;
+	/**
+	* Get the force scale value
+	*
+	* @return The scale value
+	*/
 	const double getScale() const;
+	/**
+	* @brief Get the features of the target ligand
+	*
+	* @return The target features
+	*/
 	const std::vector<std::vector<double>> getTargetFeatures() const;
+	/**
+	* Get the Ghost partciles indices
+	*
+	* @return the Ghost partciles indices
+	*/
 	const std::vector<int> getParticleIndices() const;
-	const std::vector<double> getSignalForceWeights() const;
-	/**
-	 * Set whether this force makes use of periodic boundary conditions.  If this is set
-	 * to true, the TensorFlow graph must include a 3x3 tensor called "boxvectors", which
-	 * is set to the current periodic box vectors.
-	 */
-	void setUsesPeriodicBoundaryConditions(bool periodic);
-	/**
-	 * Get whether this force makes use of periodic boundary conditions.
-	 */
-	bool usesPeriodicBoundaryConditions() const;
 
 	/**
-	 * Get the number of global parameters that the interaction depends on.
-	 */
+	* Get the dynamical variables weights
+	*
+	* @return the dynamical variables weights
+	*/
+	const std::vector<double> getSignalForceWeights() const;
+	/**
+	* Set whether this force makes use of periodic boundary conditions.  If this is set
+	* to true, the network must take a 3x3 tensor as its input, which
+	* is set to the current periodic box vectors.
+	*
+	* @param The boolean value to determine if the model considers the periodic boundary conditions
+	*/
+	void setUsesPeriodicBoundaryConditions(bool periodic);
+	/**
+	* Get a boolean value showing whether the force uses the periodic boundary conditions
+	*
+	* @return a boolean value determining the use of periodic boundary conditions
+	*/
+	bool usesPeriodicBoundaryConditions() const;
+	/**
+	* Get the number of global parameters that the interaction depends on
+	*
+	* @return the number of global parameters
+	*/
 	int getNumGlobalParameters() const;
 	/**
 	 * Add a new global parameter that the interaction may depend on.  The default value provided to
@@ -134,12 +166,12 @@ private:
  */
 class PyTorchForce::GlobalParameterInfo {
 public:
-    std::string name;
-    double defaultValue;
-    GlobalParameterInfo() {
-    }
-    GlobalParameterInfo(const std::string& name, double defaultValue) : name(name), defaultValue(defaultValue) {
-    }
+	std::string name;
+	double defaultValue;
+	GlobalParameterInfo() {
+	}
+	GlobalParameterInfo(const std::string& name, double defaultValue) : name(name), defaultValue(defaultValue) {
+	}
 };
 
 } // namespace PyTorchPlugin

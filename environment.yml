@@ -1,12 +1,12 @@
 channels:
   - conda-forge
 dependencies:
-  - cmake=3.19
-  - pytorch-gpu=1.10.2
+  - cmake
+  - pytorch-gpu
   - openmm=7.7.0
   - swig
   - cudnn
-  - cudatoolkit=10.2.89
+  - cudatoolkit
   - h5py
   - mdtraj
   - torchani
