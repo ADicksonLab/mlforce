@@ -1,8 +1,12 @@
 * OpenMM Machine Learning Plugin (MLForce)
 
+[[flexibletopology.pdf]]
+This is an [[http://openmm.org][OpenMM]] plugin that generates forces from [[https:https://github.com/aiqm/torchani][TorchANI]]
+model. These forces are used to change the attributes and positions of
+of particles called "Ghost particles" in the [[https://github.com/ADicksonLab/flexibletopology][Flexible Topology]]
+simultaions. For more details read [[https://chemrxiv.org/engage/chemrxiv/article-details/626be58411b14616eb34a3f4][FLEXIBLE TOPOLOGY: A NEW METHOD FOR
+DYNAMIC DRUG DESIGN]] on Chemrxiv.
 
-This is an [[http://openmm.org][OpenMM]] plugin that makes possible the [[https://pytorch.org][PyTorch]] models to be
-used for creating external forces.
 
 * Installation
 There are three ways to install dependencies of this package.
@@ -73,3 +77,5 @@ python -c 'import torch.utils; print(torch.utils.cmake_prefix_path)'
 #+begin_src bash
  python -c "import mlforce"
 #+end_src
+* Authors
+Donyapour N, Roussey N, Bose S, Dickson A.
