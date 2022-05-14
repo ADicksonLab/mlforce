@@ -1,6 +1,6 @@
 * OpenMM Machine Learning Plugin (MLForce)
 
-[[flexibletopology.pdf]]
+[[flexibletopology.jpg]]
 This is an [[http://openmm.org][OpenMM]] plugin that generates forces from [[https:https://github.com/aiqm/torchani][TorchANI]]
 model. These forces are used to change the attributes and positions of
 of particles called "Ghost particles" in the [[https://github.com/ADicksonLab/flexibletopology][Flexible Topology]]
