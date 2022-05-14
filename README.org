@@ -1,11 +1,12 @@
 * OpenMM Machine Learning Plugin (MLForce)
 
-[[flexibletopology.jpg]]
-This is an [[http://openmm.org][OpenMM]] plugin that generates forces from [[https:https://github.com/aiqm/torchani][TorchANI]]
+[[flexibletopology.pdf]]
+
+This is an [[http://openmm.org][OpenMM]] plugin that generates forces from the [[https:https://github.com/aiqm/torchani][TorchANI]]
 model. These forces are used to change the attributes and positions of
-of particles called "Ghost particles" in the [[https://github.com/ADicksonLab/flexibletopology][Flexible Topology]]
+particles referred to as "Ghost Particles" in the [[https://github.com/ADicksonLab/flexibletopology][Flexible Topology]]
 simultaions. For more details read [[https://chemrxiv.org/engage/chemrxiv/article-details/626be58411b14616eb34a3f4][FLEXIBLE TOPOLOGY: A NEW METHOD FOR
-DYNAMIC DRUG DESIGN]] on Chemrxiv.
+DYNAMIC DRUG DESIGN]] paper on Chemrxiv.
 
 
 * Installation
