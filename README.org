@@ -20,7 +20,7 @@ Here we provide instructions uisng the third method, follow these instructions t
 
 1- clone MLforce from its repositiry
 #+begin_src bash
-  git clone git@gitlab.com:ADicksonLab/mlforce.git
+  git clone https://github.com/ADicksonLab/mlforce.git
 #+end_src
 
 2- You should use conda to make a new virtual environment using the ~environment.yml~
